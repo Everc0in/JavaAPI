@@ -29,11 +29,11 @@ public class Test {
         Coin fromCoin = coins.getCoin(from);
         Coin toCoin = coins.getCoin(to);
         if (fromCoin != null && !fromCoin.isFromAvailable()) {
-            //Exchanging from BTC is currently available.
+            //Exchanging from BTC is currently not available.
             return;
         }
         if (toCoin != null && !toCoin.isToAvailable()) {
-            //Exchanging to ETH is currently available.
+            //Exchanging to ETH is currently not available.
             return;
         }
         if (!evercoin.validateAddress(from, fromAddress).isValid()) {
