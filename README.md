@@ -17,7 +17,7 @@ public class Test {
     public static void main(String[] args) throws InterruptedException {
         // Make sure to use test endpoint during development and testing.
         // System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
-        final String API_KEY = "Your API Key"; 
+        final String API_KEY = "Your API Key"; // contact support@evercoin.com to obtain yours
         final String version = "v1";
         final String from = "ETC";
         final String to = "ETH";
