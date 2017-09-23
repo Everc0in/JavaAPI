@@ -1,10 +1,10 @@
 # <img src="https://raw.githubusercontent.com/Everc0in/JavaAPI/master/evercoin-logo.png" height="30" width="auto" >  Java library
 
-Evercoin is a an instant-access cryptocurrency exchange. And this library is for the crypto currency buying and selling using Evercoin service
+[Evercoin](https://evercoin.com) is a an instant-access cryptocurrency exchange. This Java API enables you to easily integrate cryptocurrency exchange funtionality into your Java app.
 
 ## Requirements
 - Java 1.6 or higher
-- API Key // 
+- API Key // contact support@evercoin.com to obtain your API key
 
 ## Download
 
@@ -15,7 +15,8 @@ Download a version of the Evercoin java's jar from [JavaAPI](https://github.com/
 public class Test {
 
     public static void main(String[] args) throws InterruptedException {
-        //System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
+        // Make sure to use test endpoint for your testings.
+        // System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
         final String API_KEY = "Your API Key"; 
         final String version = "v1";
         final String from = "ETC";
@@ -28,11 +29,11 @@ public class Test {
         Coin fromCoin = coins.getCoin(from);
         Coin toCoin = coins.getCoin(to);
         if (!fromCoin.isFrom()) {
-            //Evercoin is not buying ETH now.
+            //Exchanging from ETC is currently not available.
             return;
         }
         if (!toCoin.isTo()) {
-            //Evercoin is not selling ETC now.
+            //Exchanging to ETH is currently not available.
             return;
         }
         if (!evercoin.validateAddress(from, fromAddress).isValid()) {
@@ -49,8 +50,7 @@ public class Test {
         if (priceResponse.isSuccess()) {
             OrderResponse orderResponse = evercoin.createOrder(priceResponse, refundAddress, destinationAddress);
             if (orderResponse.isSuccess()) {
-                StatusResponse statusResponse = evercoin.getStatus(orderResponse.getOrderId());
-                System.out.println("You should deposit to this address: " + orderResponse.getDepositAddress().getMainAddress());
+                System.out.println("Deposit address: " + orderResponse.getDepositAddress().getMainAddress());
                 while (true) {
                     Thread.sleep(10000);
                     if (statusResponse.isSuccess()) {
