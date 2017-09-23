@@ -15,7 +15,7 @@ Download a version of the Evercoin java's jar from [JavaAPI](https://github.com/
 public class Test {
 
     public static void main(String[] args) throws InterruptedException {
-        // Make sure to use test endpoint for your testings.
+        // Make sure to use test endpoint during development and testing.
         // System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
         final String API_KEY = "Your API Key"; 
         final String version = "v1";
