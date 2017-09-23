@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Everc0in/JavaAPI/master/evercoin-logo.png" height="24" width="auto" > Java library
+# <img src="https://raw.githubusercontent.com/Everc0in/JavaAPI/master/evercoin-logo.png" height="36" width="auto" > Java library
 
 Evercoin is a an instant-access cryptocurrency exchange. And this library is for the crypto currency buying and selling using Evercoin service.
 
