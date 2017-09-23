@@ -11,7 +11,7 @@ public class Test {
         System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
         final String API_KEY = "7f878074f09f4f673554f30be51b6a0d";
         final String version = "v1";
-        final String from = "BTC";
+        final String from = "LTC";
         final String to = "ETH";
         final String fromAddress = "mwCwTceJvYV27KXBc3NJZys6CjsgsoeHmf";
         final String toAddress = "0x4f78e407b312e6dde8af699ca73b7c15dddfea42";

@@ -62,7 +62,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     JsonObject resultObject = obj.getJsonObject("result");
                     final String lFrom = resultObject.getString("from");
@@ -94,7 +94,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     final String isValid = obj.getString("result");
                     if (isValid.equals("true")) {
@@ -127,7 +127,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     CoinsResponse response = new CoinsResponse();
                     JsonArray results = obj.getJsonArray("result");
@@ -191,7 +191,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     JsonValue result = obj.get("result");
                     if (!result.toString().equals("null")) {
@@ -252,7 +252,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     JsonValue result = obj.get("result");
                     if (!result.toString().equals("null")) {
@@ -287,7 +287,7 @@ public class EvercoinFactory {
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
-                String error = getNullableStringValue(obj, "error");
+                String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     JsonObject resultObject = obj.getJsonObject("result");
                     final Status exchangeStatus = Status.get(resultObject.getInt("exchangeStatus"));
@@ -317,7 +317,7 @@ public class EvercoinFactory {
             return new StatusResponse("Exception");
         }
 
-        private String getNullableStringValue(JsonObject resultObject, String tag) {
+        private String getNullableObjectValue(JsonObject resultObject, String tag) {
             String value = null;
             if (!resultObject.get(tag).toString().equals("null")) {
                 value = resultObject.getJsonObject(tag).getString("message");
@@ -325,11 +325,19 @@ public class EvercoinFactory {
             return value;
         }
 
+        private String getNullableStringValue(JsonObject resultObject, String tag) {
+            String value = null;
+            if (!resultObject.get(tag).toString().equals("null")) {
+                value = resultObject.getString(tag);
+            }
+            return value;
+        }
+
         private Address makeAddressFromJson(JsonObject jsonObject, String tag) {
             final JsonObject addressObject = jsonObject.getJsonObject(tag);
             final String mainAddress = addressObject.getString("mainAddress");
-            String tagName = getNullableStringValue(addressObject, "tagName");
-            String tagValue = getNullableStringValue(addressObject, "tagValue");
+            String tagName = getNullableObjectValue(addressObject, "tagName");
+            String tagValue = getNullableObjectValue(addressObject, "tagValue");
             if (tagValue != null && tagName.equals("Payment Id")) {
                 return new MoneroAddress(mainAddress, tagValue);
             } else if (tagValue != null && tagName.equals("DestinationTag")) {
