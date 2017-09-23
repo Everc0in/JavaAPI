@@ -10,30 +10,15 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EvercoinFactory {
     private final static String URI;
-    private final static String LIMIT_SERVICE;
-    private final static String VALIDATE_ADDRESS_SERVICE;
-    private final static String CANCEL_SERVICE;
-    private final static String GET_COINS_SERVICE;
-    private final static String GET_PRICE_SERVICE;
-    private final static String CREATE_ORDER_SERVICE;
-    private final static String GET_STATUS_SERVICE;
     private static Evercoin evercoin;
+    private static final String EVERCOIN_API_KEY = "EVERCOIN-API-KEY";
 
     static {
         final String endpoint = System.getProperty("evercoin.api.endpoint");
         URI = endpoint != null ? endpoint : "https://api.evercoin.com/";
-        LIMIT_SERVICE = URI + "limit/";
-        VALIDATE_ADDRESS_SERVICE = URI + "validate/";
-        CANCEL_SERVICE = URI + "cancel/";
-        GET_COINS_SERVICE = URI + "coins/";
-        GET_PRICE_SERVICE = URI + "price/";
-        CREATE_ORDER_SERVICE = URI + "order/";
-        GET_STATUS_SERVICE = URI + "status/";
     }
 
     public synchronized static Evercoin create(EvercoinApiConfig config) {
@@ -44,18 +29,38 @@ public class EvercoinFactory {
     }
 
     static class EvercoinImpl implements Evercoin {
+
+        private final String LIMIT_SERVICE;
+        private final String VALIDATE_ADDRESS_SERVICE;
+        private final String GET_COINS_SERVICE;
+        private final String GET_PRICE_SERVICE;
+        private final String CREATE_ORDER_SERVICE;
+        private final String GET_STATUS_SERVICE;
         String version;
         String apiKey;
 
         EvercoinImpl(String apiKey, String version) {
             this.apiKey = apiKey;
             this.version = version;
+            LIMIT_SERVICE = URI + version + "/limit/";
+            VALIDATE_ADDRESS_SERVICE = URI + "/validate/";
+            GET_COINS_SERVICE = URI + "/coins/";
+            GET_PRICE_SERVICE = URI + "/price/";
+            CREATE_ORDER_SERVICE = URI + "/order/";
+            GET_STATUS_SERVICE = URI + "/status/";
         }
 
         public LimitResponse getLimit(final String from, final String to) {
-            String url = LIMIT_SERVICE + from + "-" + to;
-            try (InputStream is = new URL(url).openStream();
-                 JsonReader rdr = Json.createReader(is)) {
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(LIMIT_SERVICE + from + "-" + to);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
+                conn.setRequestMethod("GET");
+                InputStream is = new BufferedInputStream(conn.getInputStream());
+                JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
                 String error = getNullableStringValue(obj, "error");
                 if (error == null) {
@@ -70,14 +75,24 @@ public class EvercoinFactory {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                if (conn != null)
+                    conn.disconnect();
             }
             return new LimitResponse("Exception");
         }
 
         public ValidateResponse validateAddress(final String coin, final String address) {
-            String url = VALIDATE_ADDRESS_SERVICE + coin + "/" + address;
-            try (InputStream is = new URL(url).openStream();
-                 JsonReader rdr = Json.createReader(is)) {
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(VALIDATE_ADDRESS_SERVICE + coin + "/" + address);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(5000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
+                conn.setRequestMethod("GET");
+                InputStream is = new BufferedInputStream(conn.getInputStream());
+                JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
                 String error = getNullableStringValue(obj, "error");
                 if (error == null) {
@@ -92,37 +107,43 @@ public class EvercoinFactory {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                if (conn != null)
+                    conn.disconnect();
             }
             return new ValidateResponse("Exception");
         }
 
         @Override
-        public CancelResponse cancelOrder(String orderId) {
+        public CoinsResponse getCoins() {
             HttpURLConnection conn = null;
             try {
-                String json = Json.createObjectBuilder()
-                        .add("orderId", orderId)
-                        .build()
-                        .toString();
-                URL url = new URL(CANCEL_SERVICE);
+                URL url = new URL(GET_COINS_SERVICE);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(5000);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
-                conn.setRequestMethod("POST");
-                OutputStream os = conn.getOutputStream();
-                os.write(json.getBytes("UTF-8"));
-                os.flush();
-                os.close();
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
+                conn.setRequestMethod("GET");
                 InputStream is = new BufferedInputStream(conn.getInputStream());
                 JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
                 String error = getNullableStringValue(obj, "error");
                 if (error == null) {
-                    return new CancelResponse();
+                    CoinsResponse response = new CoinsResponse();
+                    JsonArray results = obj.getJsonArray("result");
+                    int len = results.size();
+                    for (int i = 0; i < len; i++) {
+                        JsonObject order = results.getJsonObject(i);
+                        final String name = order.getString("name");
+                        final String symbol = order.getString("symbol");
+                        final boolean from = order.getBoolean("from");
+                        final boolean to = order.getBoolean("to");
+                        final Coin coin = new Coin(name, symbol, from, to);
+                        response.getCoinList().add(coin);
+                    }
+                    return response;
                 } else {
-                    return new CancelResponse(error);
+                    return new CoinsResponse(error);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -130,30 +151,7 @@ public class EvercoinFactory {
                 if (conn != null)
                     conn.disconnect();
             }
-            return new CancelResponse("Exception");
-        }
-
-        @Override
-        public List<CoinResponse> getCoins() {
-            List<CoinResponse> list = new ArrayList<>();
-            try (InputStream is = new URL(GET_COINS_SERVICE).openStream();
-                 JsonReader rdr = Json.createReader(is)) {
-                JsonObject obj = rdr.readObject();
-                JsonArray results = obj.getJsonArray("result");
-                int len = results.size();
-                for (int i = 0; i < len; i++) {
-                    JsonObject order = results.getJsonObject(i);
-                    final String name = order.getString("name");
-                    final String symbol = order.getString("symbol");
-                    final boolean from = order.getBoolean("from");
-                    final boolean to = order.getBoolean("to");
-                    final CoinResponse response = new CoinResponse(name, symbol, from, to);
-                    list.add(response);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return list;
+            return new CoinsResponse("Exception");
         }
 
         @Override
@@ -182,6 +180,7 @@ public class EvercoinFactory {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(5000);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
                 conn.setRequestMethod("POST");
@@ -242,6 +241,7 @@ public class EvercoinFactory {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(5000);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
                 conn.setRequestMethod("POST");
@@ -276,9 +276,16 @@ public class EvercoinFactory {
         }
 
         public StatusResponse getStatus(final String orderId) {
-            String url = GET_STATUS_SERVICE + orderId;
-            try (InputStream is = new URL(url).openStream();
-                 JsonReader rdr = Json.createReader(is)) {
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(GET_STATUS_SERVICE + orderId);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(5000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty(EVERCOIN_API_KEY, apiKey);
+                conn.setRequestMethod("GET");
+                InputStream is = new BufferedInputStream(conn.getInputStream());
+                JsonReader rdr = Json.createReader(is);
                 JsonObject obj = rdr.readObject();
                 String error = getNullableStringValue(obj, "error");
                 if (error == null) {
@@ -303,6 +310,9 @@ public class EvercoinFactory {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                if (conn != null)
+                    conn.disconnect();
             }
             return new StatusResponse("Exception");
         }
@@ -310,7 +320,7 @@ public class EvercoinFactory {
         private String getNullableStringValue(JsonObject resultObject, String tag) {
             String value = null;
             if (!resultObject.get(tag).toString().equals("null")) {
-                value = resultObject.getString(tag);
+                value = resultObject.getJsonObject(tag).getString("message");
             }
             return value;
         }
@@ -320,9 +330,9 @@ public class EvercoinFactory {
             final String mainAddress = addressObject.getString("mainAddress");
             String tagName = getNullableStringValue(addressObject, "tagName");
             String tagValue = getNullableStringValue(addressObject, "tagValue");
-            if (tagName.equals("Payment Id") && tagValue != null) {
+            if (tagValue != null && tagName.equals("Payment Id")) {
                 return new MoneroAddress(mainAddress, tagValue);
-            } else if (tagName.equals("DestinationTag") && tagValue != null) {
+            } else if (tagValue != null && tagName.equals("DestinationTag")) {
                 return new RippleAddress(mainAddress, new Integer(tagValue));
             }
             return new Address(mainAddress);

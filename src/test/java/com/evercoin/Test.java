@@ -4,40 +4,58 @@
 package com.evercoin;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class Test {
 
-    public final static Test sharedInstance = new Test();
-
     public static void main(String[] args) throws InterruptedException {
-        Evercoin evercoin = EvercoinFactory.create(new EvercoinApiConfig("Your API Key", "v1"));
-        LimitResponse limitResponse = evercoin.getLimit("ETH", "LTC");
-        List<CoinResponse> coins = evercoin.getCoins();
-        if (!evercoin.validateAddress("ETH", "0x4f78e407b312e6dde8af699ca73b7c15dddfea42").isValid()) {
+        //System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
+        final String API_KEY = "Your API Key"; 
+        final String version = "v1";
+        final String from = "ETC";
+        final String to = "ETH";
+        final String fromAddress = "0x4f78e407b312e6dde8af699ca73b7c15dddfea42";
+        final String toAddress = "0x4f78e407b312e6dde8af699ca73b7c15dddfea42";
+        final String fromAmount = "2.0";
+        Evercoin evercoin = EvercoinFactory.create(new EvercoinApiConfig(API_KEY, version));
+        CoinsResponse coins = evercoin.getCoins();
+        Coin fromCoin = coins.getCoin(from);
+        Coin toCoin = coins.getCoin(to);
+        if (!fromCoin.isFrom()) {
+            //Evercoin is not buying ETH now.
             return;
         }
-        Address refundAddress = new Address("0x4f78e407b312e6dde8af699ca73b7c15dddfea42");
-        if (!evercoin.validateAddress("LTC", "mrkEVRsbrLeb7CFE6wcKJv1TajfgJjU6wj").isValid()) {
+        if (!toCoin.isTo()) {
+            //Evercoin is not selling ETC now.
             return;
         }
-        Address withdrawAddress = new Address("mrkEVRsbrLeb7CFE6wcKJv1TajfgJjU6wj");
-        PriceResponse priceResponse = evercoin.getPrice("ETH", "LTC", new BigDecimal("1.0"), null);
+        if (!evercoin.validateAddress(from, fromAddress).isValid()) {
+            //ETH address is not valid.
+            return;
+        }
+        Address refundAddress = new Address(fromAddress);
+        if (!evercoin.validateAddress(to, toAddress).isValid()) {
+            //ETC address is not valid.
+            return;
+        }
+        Address destinationAddress = new Address(toAddress);
+        PriceResponse priceResponse = evercoin.getPrice(from, to, new BigDecimal(fromAmount), null);
         if (priceResponse.isSuccess()) {
-            OrderResponse orderResponse = evercoin.createOrder(priceResponse, refundAddress, withdrawAddress);
+            OrderResponse orderResponse = evercoin.createOrder(priceResponse, refundAddress, destinationAddress);
             if (orderResponse.isSuccess()) {
                 StatusResponse statusResponse = evercoin.getStatus(orderResponse.getOrderId());
+                System.out.println("You should deposit to this address: " + orderResponse.getDepositAddress().getMainAddress());
                 while (true) {
-                    Thread.sleep(2000);
+                    Thread.sleep(10000);
                     if (statusResponse.isSuccess()) {
                         System.out.println(statusResponse.getExchangeStatus().getText());
                         if (statusResponse.getExchangeStatus().getId() == Status.All_Done.getId()) {
+                            //Enjoy your ETC
                             return;
                         }
                     }
                 }
             } else {
-                System.err.println(orderResponse.getError());
+                System.err.println("There is an error in order creation: " + orderResponse.getError());
             }
         }
     }
