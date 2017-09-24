@@ -133,8 +133,8 @@ public class EvercoinFactory {
                         JsonObject order = results.getJsonObject(i);
                         final String name = order.getString("name");
                         final String symbol = order.getString("symbol");
-                        final boolean from = order.getBoolean("from");
-                        final boolean to = order.getBoolean("to");
+                        final boolean from = order.getBoolean("fromAvailable");
+                        final boolean to = order.getBoolean("toAvailable");
                         final Coin coin = new Coin(name, symbol, from, to);
                         response.getCoinList().add(coin);
                     }

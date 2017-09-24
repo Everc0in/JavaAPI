@@ -11,10 +11,10 @@ public class Test {
         System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
         final String API_KEY = "7f878074f09f4f673554f30be51b6a0d";
         final String version = "v1";
-        final String from = "LTC";
-        final String to = "ETH";
-        final String fromAddress = "mwCwTceJvYV27KXBc3NJZys6CjsgsoeHmf";
-        final String toAddress = "0x4f78e407b312e6dde8af699ca73b7c15dddfea42";
+        final String from = "ETH";
+        final String to = "LTC";
+        final String toAddress = "mwCwTceJvYV27KXBc3NJZys6CjsgsoeHmf";
+        final String fromAddress = "0xb306e1D76E4C4bd6462F370d4551F842eB4fFcad";
         final String fromAmount = "1.0";
         Evercoin evercoin = EvercoinFactory.create(new EvercoinApiConfig(API_KEY, version));
         CoinsResponse coins = evercoin.getCoins();
@@ -48,13 +48,13 @@ public class Test {
                     StatusResponse statusResponse = evercoin.getStatus(orderResponse.getOrderId());
                     if (statusResponse.isSuccess()) {
                         if (statusResponse.getExchangeStatus().getId() == Status.Awaiting_Deposit.getId()) {
-                            System.out.println("Send 1 BTC to the address");
+                            System.out.println("Send" + fromAmount + "from" + "to the address");
                         } else if (statusResponse.getExchangeStatus().getId() == Status.Awaiting_Confirm.getId()) {
-                            System.out.println("Looks like you sent BTC. Waiting for confirmation on the blockchain.");
+                            System.out.println("Looks like you sent "+ from + ". Waiting for confirmation on the blockchain.");
                         } else if (statusResponse.getExchangeStatus().getId() == Status.Awaiting_Exchange.getId()) {
-                            System.out.println("Your ETH is on the way.");
+                            System.out.println("Your" + to + "is on the way.");
                         } else if (statusResponse.getExchangeStatus().getId() == Status.All_Done.getId()) {
-                            System.out.println("Success! Enjoy your ETH");
+                            System.out.println("Success! Enjoy your" + to);
                             return;
                         }
                     }
