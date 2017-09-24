@@ -43,11 +43,11 @@ public class EvercoinFactory {
             this.apiKey = apiKey;
             this.version = version;
             LIMIT_SERVICE = URI + version + "/limit/";
-            VALIDATE_ADDRESS_SERVICE = URI + "/validate/";
-            GET_COINS_SERVICE = URI + "/coins/";
-            GET_PRICE_SERVICE = URI + "/price/";
-            CREATE_ORDER_SERVICE = URI + "/order/";
-            GET_STATUS_SERVICE = URI + "/status/";
+            VALIDATE_ADDRESS_SERVICE = URI + version + "/validate/";
+            GET_COINS_SERVICE = URI + version +"/coins/";
+            GET_PRICE_SERVICE = URI + version +"/price/";
+            CREATE_ORDER_SERVICE = URI + version + "/order/";
+            GET_STATUS_SERVICE = URI + version + "/status/";
         }
 
         public LimitResponse getLimit(final String from, final String to) {
@@ -96,12 +96,9 @@ public class EvercoinFactory {
                 JsonObject obj = rdr.readObject();
                 String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
-                    final String isValid = obj.getString("result");
-                    if (isValid.equals("true")) {
-                        return new ValidateResponse(true);
-                    } else {
-                        return new ValidateResponse(false);
-                    }
+                    JsonObject resultObject = obj.getJsonObject("result");
+                    final Boolean isValid = resultObject.getBoolean("isValid");
+                    return new ValidateResponse(isValid);
                 } else {
                     return new ValidateResponse(error);
                 }
