@@ -255,7 +255,7 @@ public class EvercoinFactory {
                     if (!result.toString().equals("null")) {
                         JsonObject order = obj.getJsonObject("result");
                         final String orderId = order.getString("orderId");
-                        final Address depositAddress = makeAddressFromJson(order, "fromAddress");
+                        final Address depositAddress = makeAddressFromJson(order, "depositAddress");
                         return new OrderResponse(orderId, depositAddress);
                     } else {
                         return new OrderResponse("Error");
