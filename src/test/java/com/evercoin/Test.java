@@ -11,10 +11,10 @@ public class Test {
         System.setProperty("evercoin.api.endpoint", "https://test.evercoin.com/");
         final String API_KEY = "7f878074f09f4f673554f30be51b6a0d";
         final String version = "v1";
-        final String deposit = "ETH";
-        final String destination = "LTC";
-        final String destinationMainAddress = "mwCwTceJvYV27KXBc3NJZys6CjsgsoeHmf";
-        final String refundMainAddress = "0xb306e1D76E4C4bd6462F370d4551F842eB4fFcad";
+        final String deposit = "BTC";
+        final String destination = "ETH";
+        final String refundMainAddress = "n4MZ1KydkCEokrr8fVAcGSghsSMjHvNexo";
+        final String destinationMainAddress = "0xb306e1D76E4C4bd6462F370d4551F842eB4fFcad";
         final String depositAmount = "1.0";
         Evercoin evercoin = EvercoinFactory.create(new EvercoinApiConfig(API_KEY, version));
         CoinsResponse coins = evercoin.getCoins();
