@@ -6,43 +6,43 @@ package com.evercoin;
 import java.math.BigDecimal;
 
 public class PriceResponse extends Response {
-    private final String fromCoin;
-    private final String toCoin;
-    private final BigDecimal fromAmount;
-    private final BigDecimal toAmount;
+    private final String depositCoin;
+    private final String destinationCoin;
+    private final BigDecimal depositAmount;
+    private final BigDecimal destinationAmount;
     private final String signature;
 
     public PriceResponse(String error) {
         super(error);
-        this.fromCoin = null;
-        this.toCoin = null;
-        this.fromAmount = null;
-        this.toAmount = null;
+        this.depositCoin = null;
+        this.destinationCoin = null;
+        this.depositAmount = null;
+        this.destinationAmount = null;
         this.signature = null;
     }
 
-    public PriceResponse(String fromCoin, String toCoin, BigDecimal fromAmount, BigDecimal toAmount, String signature) {
-        this.fromCoin = fromCoin;
-        this.toCoin = toCoin;
-        this.fromAmount = fromAmount;
-        this.toAmount = toAmount;
+    public PriceResponse(String depositCoin, String destinationCoin, BigDecimal depositAmount, BigDecimal destinationAmount, String signature) {
+        this.depositCoin = depositCoin;
+        this.destinationCoin = destinationCoin;
+        this.depositAmount = depositAmount;
+        this.destinationAmount = destinationAmount;
         this.signature = signature;
     }
 
-    public String getFromCoin() {
-        return fromCoin;
+    public String getDepositCoin() {
+        return depositCoin;
     }
 
-    public String getToCoin() {
-        return toCoin;
+    public String getDestinationCoin() {
+        return destinationCoin;
     }
 
-    public BigDecimal getFromAmount() {
-        return fromAmount;
+    public BigDecimal getDepositAmount() {
+        return depositAmount;
     }
 
-    public BigDecimal getToAmount() {
-        return toAmount;
+    public BigDecimal getDestinationAmount() {
+        return destinationAmount;
     }
 
     public String getSignature() {

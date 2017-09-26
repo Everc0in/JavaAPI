@@ -7,108 +7,108 @@ import java.math.BigDecimal;
 
 public class StatusResponse extends Response {
     private final Status exchangeStatus;
-    private final BigDecimal fromAmount;
-    private final String fromCoin;
-    private final String toCoin;
-    private final BigDecimal toAmount;
+    private final BigDecimal depositAmount;
+    private final String depositCoin;
+    private final String destinationCoin;
+    private final BigDecimal destinationAmount;
     private final Address refundAddress;
-    private final Address toAddress;
-    private final Address fromAddress;
+    private final Address destinationAddress;
+    private final Address depositAddress;
     private final long creationTime;
-    private final BigDecimal fromExpectedAmount;
-    private final BigDecimal toExpectedAmount;
+    private final BigDecimal depositExpectedAmount;
+    private final BigDecimal destinationExpectedAmount;
     private final String txURL;
-    private final BigDecimal minValue;
-    private final BigDecimal maxValue;
+    private final BigDecimal minDeposit;
+    private final BigDecimal maxDeposit;
 
     public StatusResponse(String error) {
         super(error);
         this.exchangeStatus = null;
-        this.fromAmount = null;
-        this.fromCoin = null;
-        this.toCoin = null;
-        this.toAmount = null;
+        this.depositAmount = null;
+        this.depositCoin = null;
+        this.destinationCoin = null;
+        this.destinationAmount = null;
         this.refundAddress = null;
-        this.toAddress = null;
-        this.fromAddress = null;
+        this.destinationAddress = null;
+        this.depositAddress = null;
         this.creationTime = 0;
-        this.fromExpectedAmount = null;
-        this.toExpectedAmount = null;
+        this.depositExpectedAmount = null;
+        this.destinationExpectedAmount = null;
         this.txURL = null;
-        this.minValue = null;
-        this.maxValue = null;
+        this.minDeposit = null;
+        this.maxDeposit = null;
     }
 
-    public StatusResponse(Status exchangeStatus, BigDecimal fromAmount, String fromCoin, String toCoin, BigDecimal toAmount, Address refundAddress, Address toAddress, Address fromAddress, long creationTime, BigDecimal fromExpectedAmount, BigDecimal toExpectedAmount, String txURL, BigDecimal minValue, BigDecimal maxValue) {
+    public StatusResponse(Status exchangeStatus, BigDecimal depositAmount, String depositCoin, String destinationCoin, BigDecimal destinationAmount, Address refundAddress, Address destinationAddress, Address depositAddress, long creationTime, BigDecimal depositExpectedAmount, BigDecimal destinationExpectedAmount, String txURL, BigDecimal minDeposit, BigDecimal maxDeposit) {
         this.exchangeStatus = exchangeStatus;
-        this.fromAmount = fromAmount;
-        this.fromCoin = fromCoin;
-        this.toCoin = toCoin;
-        this.toAmount = toAmount;
+        this.depositAmount = depositAmount;
+        this.depositCoin = depositCoin;
+        this.destinationCoin = destinationCoin;
+        this.destinationAmount = destinationAmount;
         this.refundAddress = refundAddress;
-        this.toAddress = toAddress;
-        this.fromAddress = fromAddress;
+        this.destinationAddress = destinationAddress;
+        this.depositAddress = depositAddress;
         this.creationTime = creationTime;
-        this.fromExpectedAmount = fromExpectedAmount;
-        this.toExpectedAmount = toExpectedAmount;
+        this.depositExpectedAmount = depositExpectedAmount;
+        this.destinationExpectedAmount = destinationExpectedAmount;
         this.txURL = txURL;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.minDeposit = minDeposit;
+        this.maxDeposit = maxDeposit;
     }
 
     public Status getExchangeStatus() {
         return exchangeStatus;
     }
 
-    public BigDecimal getFromAmount() {
-        return fromAmount;
+    public BigDecimal getDepositAmount() {
+        return depositAmount;
     }
 
-    public String getFromCoin() {
-        return fromCoin;
+    public String getDepositCoin() {
+        return depositCoin;
     }
 
-    public String getToCoin() {
-        return toCoin;
+    public String getDestinationCoin() {
+        return destinationCoin;
     }
 
-    public BigDecimal getToAmount() {
-        return toAmount;
+    public BigDecimal getDestinationAmount() {
+        return destinationAmount;
     }
 
     public Address getRefundAddress() {
         return refundAddress;
     }
 
-    public Address getToAddress() {
-        return toAddress;
+    public Address getDestinationAddress() {
+        return destinationAddress;
     }
 
-    public Address getFromAddress() {
-        return fromAddress;
+    public Address getDepositAddress() {
+        return depositAddress;
     }
 
     public long getCreationTime() {
         return creationTime;
     }
 
-    public BigDecimal getFromExpectedAmount() {
-        return fromExpectedAmount;
+    public BigDecimal getDepositExpectedAmount() {
+        return depositExpectedAmount;
     }
 
-    public BigDecimal getToExpectedAmount() {
-        return toExpectedAmount;
+    public BigDecimal getDestinationExpectedAmount() {
+        return destinationExpectedAmount;
     }
 
     public String getTxURL() {
         return txURL;
     }
 
-    public BigDecimal getMinValue() {
-        return minValue;
+    public BigDecimal getMinDeposit() {
+        return minDeposit;
     }
 
-    public BigDecimal getMaxValue() {
-        return maxValue;
+    public BigDecimal getMaxDeposit() {
+        return maxDeposit;
     }
 }

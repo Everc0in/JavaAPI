@@ -9,25 +9,25 @@ public class OrderDetailResponse extends OrderResponse {
     String depositTxId;
     String depositCoin;
     BigDecimal depositAmount;
-    String withdrawTxId;
-    Address withdrawAddress;
-    String withdrawCoin;
-    BigDecimal withdrawAmount;
+    String destinationTxId;
+    Address destinationAddress;
+    String destinationCoin;
+    BigDecimal destinationAmount;
     TxStatus status;
 
     public OrderDetailResponse(String error) {
         super(error);
     }
 
-    public OrderDetailResponse(String orderId, String depositTxId, Address depositAddress, String depositCoin, BigDecimal depositAmount, String withdrawTxId, Address withdrawAddress, String withdrawCoin, BigDecimal withdrawAmount, TxStatus status) {
+    public OrderDetailResponse(String orderId, Address depositAddress, String depositTxId, String depositCoin, BigDecimal depositAmount, String destinationTxId, Address destinationAddress, String destinationCoin, BigDecimal destinationAmount, TxStatus status) {
         super(orderId, depositAddress);
         this.depositTxId = depositTxId;
         this.depositCoin = depositCoin;
         this.depositAmount = depositAmount;
-        this.withdrawTxId = withdrawTxId;
-        this.withdrawAddress = withdrawAddress;
-        this.withdrawCoin = withdrawCoin;
-        this.withdrawAmount = withdrawAmount;
+        this.destinationTxId = destinationTxId;
+        this.destinationAddress = destinationAddress;
+        this.destinationCoin = destinationCoin;
+        this.destinationAmount = destinationAmount;
         this.status = status;
     }
 }

@@ -6,15 +6,15 @@ package com.evercoin;
 import java.math.BigDecimal;
 
 public interface Evercoin {
-    LimitResponse getLimit(final String from, final String to);
+    LimitResponse getLimit(String depositCoin, String destinationCoin);
 
-    ValidateResponse validateAddress(final String coin, final String address);
+    ValidateResponse validateAddress( String coin, String address);
 
     CoinsResponse getCoins();
 
-    PriceResponse getPrice(String fromCoin, String toCoin, BigDecimal fromAmount, BigDecimal toAmount);
+    PriceResponse getPrice(String depositCoin, String destinationCoin, BigDecimal depositAmount, BigDecimal destinationAmount) ;
 
-    OrderResponse createOrder(PriceResponse priceResponse, Address refundAddress, Address toAddress);
+    OrderResponse createOrder(PriceResponse priceResponse, Address refundAddress, Address destinationAddress);
 
     StatusResponse getStatus(String orderId);
 }

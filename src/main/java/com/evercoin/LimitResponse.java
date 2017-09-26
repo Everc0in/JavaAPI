@@ -4,49 +4,39 @@
 package com.evercoin;
 
 public class LimitResponse extends Response {
-    private final String from;
-    private final String to;
-    private final String max;
-    private final String min;
+    private final String depositCoin;
+    private final String destinationCoin;
+    private final String maxDeposit;
+    private final String minDeposit;
 
     public LimitResponse(String error) {
         super(error);
-        this.from = null;
-        this.to = null;
-        this.min = null;
-        this.max = null;
+        this.depositCoin = null;
+        this.destinationCoin = null;
+        this.maxDeposit = null;
+        this.minDeposit = null;
     }
 
-    public LimitResponse(String from, String to, String min, String max) {
-        this.from = from;
-        this.to = to;
-        this.min = min;
-        this.max = max;
+    public LimitResponse(String depositCoin, String destinationCoin, String maxDeposit, String minDeposit) {
+        this.depositCoin = depositCoin;
+        this.destinationCoin = destinationCoin;
+        this.maxDeposit = maxDeposit;
+        this.minDeposit = minDeposit;
     }
 
-    public String getFrom() {
-        return from;
+    public String getDepositCoin() {
+        return depositCoin;
     }
 
-    public String getTo() {
-        return to;
+    public String getDestinationCoin() {
+        return destinationCoin;
     }
 
-    public String getMax() {
-        return max;
+    public String getMaxDeposit() {
+        return maxDeposit;
     }
 
-    public String getMin() {
-        return min;
-    }
-
-    @Override
-    public String toString() {
-        return "LimitResponse{" +
-                "from='" + from + '\'' +
-                ", to='" + to + '\'' +
-                ", max='" + max + '\'' +
-                ", min='" + min + '\'' +
-                '}';
+    public String getMinDeposit() {
+        return minDeposit;
     }
 }

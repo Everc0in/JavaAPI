@@ -44,16 +44,16 @@ public class EvercoinFactory {
             this.version = version;
             LIMIT_SERVICE = URI + version + "/limit/";
             VALIDATE_ADDRESS_SERVICE = URI + version + "/validate/";
-            GET_COINS_SERVICE = URI + version +"/coins/";
-            GET_PRICE_SERVICE = URI + version +"/price/";
+            GET_COINS_SERVICE = URI + version + "/coins/";
+            GET_PRICE_SERVICE = URI + version + "/price/";
             CREATE_ORDER_SERVICE = URI + version + "/order/";
             GET_STATUS_SERVICE = URI + version + "/status/";
         }
 
-        public LimitResponse getLimit(final String from, final String to) {
+        public LimitResponse getLimit(String depositCoin, String destinationCoin) {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL(LIMIT_SERVICE + from + "-" + to);
+                URL url = new URL(LIMIT_SERVICE + depositCoin + "-" + destinationCoin);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(000);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -65,11 +65,11 @@ public class EvercoinFactory {
                 String error = getNullableObjectValue(obj, "error");
                 if (error == null) {
                     JsonObject resultObject = obj.getJsonObject("result");
-                    final String lFrom = resultObject.getString("from");
-                    final String lTo = resultObject.getString("to");
-                    final String max = resultObject.getString("max");
-                    final String min = resultObject.getString("min");
-                    return new LimitResponse(lFrom, lTo, max, min);
+                    final String lDeposit = resultObject.getString("depositCoin");
+                    final String lDestination = resultObject.getString("destinationCoin");
+                    final String maxDeposit = resultObject.getString("maxDeposit");
+                    final String minDeposit = resultObject.getString("minDeposit");
+                    return new LimitResponse(lDeposit, lDestination, maxDeposit, minDeposit);
                 } else {
                     return new LimitResponse(error);
                 }
@@ -133,9 +133,9 @@ public class EvercoinFactory {
                         JsonObject order = results.getJsonObject(i);
                         final String name = order.getString("name");
                         final String symbol = order.getString("symbol");
-                        final boolean from = order.getBoolean("fromAvailable");
-                        final boolean to = order.getBoolean("toAvailable");
-                        final Coin coin = new Coin(name, symbol, from, to);
+                        final boolean fromAvailable = order.getBoolean("fromAvailable");
+                        final boolean toAvailable = order.getBoolean("toAvailable");
+                        final Coin coin = new Coin(name, symbol, fromAvailable, toAvailable);
                         response.getCoinList().add(coin);
                     }
                     return response;
@@ -152,24 +152,24 @@ public class EvercoinFactory {
         }
 
         @Override
-        public PriceResponse getPrice(String fromCoin, String toCoin, BigDecimal fromAmount, BigDecimal toAmount) {
+        public PriceResponse getPrice(String depositCoin, String destinationCoin, BigDecimal depositAmount, BigDecimal destinationAmount) {
             HttpURLConnection conn = null;
             try {
                 String json;
-                if (toAmount == null && fromAmount == null) {
+                if (destinationAmount == null && depositAmount == null) {
                     return new PriceResponse("Amount can not be null");
-                } else if (fromAmount != null) {
+                } else if (depositAmount != null) {
                     json = Json.createObjectBuilder()
-                            .add("fromCoin", fromCoin)
-                            .add("toCoin", toCoin)
-                            .add("fromAmount", fromAmount.toPlainString())
+                            .add("depositCoin", depositCoin)
+                            .add("destinationCoin", destinationCoin)
+                            .add("depositAmount", depositAmount.toPlainString())
                             .build()
                             .toString();
                 } else {
                     json = Json.createObjectBuilder()
-                            .add("fromCoin", fromCoin)
-                            .add("toCoin", toCoin)
-                            .add("withdrawAmount", toAmount.toPlainString())
+                            .add("depositCoin", depositCoin)
+                            .add("destinationCoin", destinationCoin)
+                            .add("destinationAmount", destinationAmount.toPlainString())
                             .build()
                             .toString();
                 }
@@ -193,12 +193,12 @@ public class EvercoinFactory {
                     JsonValue result = obj.get("result");
                     if (!result.toString().equals("null")) {
                         JsonObject order = obj.getJsonObject("result");
-                        final String responseFrom = order.getString("fromCoin");
-                        final String responseTo = order.getString("toCoin");
-                        final BigDecimal responseRcvAmount = new BigDecimal(order.getString("fromAmount"));
-                        final BigDecimal responseToAmount = new BigDecimal(order.getString("toAmount"));
+                        final String responseDeposit = order.getString("depositCoin");
+                        final String responseDestination = order.getString("destinationCoin");
+                        final BigDecimal responseRcvAmount = new BigDecimal(order.getString("depositAmount"));
+                        final BigDecimal responseToAmount = new BigDecimal(order.getString("destinationAmount"));
                         final String signature = order.getString("signature");
-                        return new PriceResponse(responseFrom, responseTo, responseRcvAmount, responseToAmount, signature);
+                        return new PriceResponse(responseDeposit, responseDestination, responseRcvAmount, responseToAmount, signature);
                     } else {
                         return new PriceResponse("No Order");
                     }
@@ -215,22 +215,22 @@ public class EvercoinFactory {
         }
 
         @Override
-        public OrderResponse createOrder(PriceResponse priceResponse, Address refundAddress, Address toAddress) {
+        public OrderResponse createOrder(PriceResponse priceResponse, Address refundAddress, Address destinationAddress) {
             OrderResponse response = null;
             HttpURLConnection conn = null;
-            final String fromCoin = priceResponse.getFromCoin();
-            final String toCoin = priceResponse.getToCoin();
-            final BigDecimal fromAmount = priceResponse.getFromAmount();
-            final BigDecimal toAmount = priceResponse.getToAmount();
+            final String depositCoin = priceResponse.getDepositCoin();
+            final String destinationCoin = priceResponse.getDestinationCoin();
+            final BigDecimal depositAmount = priceResponse.getDepositAmount();
+            final BigDecimal destinationAmount = priceResponse.getDestinationAmount();
             final String signature = priceResponse.getSignature();
             try {
                 String json = Json.createObjectBuilder()
-                        .add("fromCoin", fromCoin)
-                        .add("toCoin", toCoin)
-                        .add("toAddress", toAddress.getJsonValue())
+                        .add("depositCoin", depositCoin)
+                        .add("destinationCoin", destinationCoin)
+                        .add("destinationAddress", destinationAddress.getJsonValue())
                         .add("refundAddress", refundAddress.getJsonValue())
-                        .add("fromAmount", fromAmount.toPlainString())
-                        .add("toAmount", toAmount.toPlainString())
+                        .add("depositAmount", depositAmount.toPlainString())
+                        .add("destinationAmount", destinationAmount.toPlainString())
                         .add("signature", signature)
                         .build()
                         .toString();
@@ -288,20 +288,20 @@ public class EvercoinFactory {
                 if (error == null) {
                     JsonObject resultObject = obj.getJsonObject("result");
                     final Status exchangeStatus = Status.get(resultObject.getInt("exchangeStatus"));
-                    final BigDecimal fromAmount = new BigDecimal(resultObject.get("fromAmount").toString());
-                    final String fromCoin = resultObject.getString("fromCoin");
-                    final String toCoin = resultObject.getString("toCoin");
-                    final BigDecimal toAmount = new BigDecimal(resultObject.get("toAmount").toString());
+                    final BigDecimal depositAmount = new BigDecimal(resultObject.get("depositAmount").toString());
+                    final String depositCoin = resultObject.getString("depositCoin");
+                    final String destinationCoin = resultObject.getString("destinationCoin");
+                    final BigDecimal destinationAmount = new BigDecimal(resultObject.get("destinationAmount").toString());
                     final Address refundAddress = makeAddressFromJson(resultObject, "refundAddress");
-                    final Address toAddress = makeAddressFromJson(resultObject, "toAddress");
-                    final Address fromAddress = makeAddressFromJson(resultObject, "fromAddress");
+                    final Address destinationAddress = makeAddressFromJson(resultObject, "destinationAddress");
+                    final Address depositAddress = makeAddressFromJson(resultObject, "depositAddress");
                     final long creationTime = Long.parseLong(resultObject.get("creationTime").toString());
-                    final BigDecimal fromExpectedAmount = new BigDecimal(resultObject.get("fromExpectedAmount").toString());
-                    final BigDecimal toExpectedAmount = new BigDecimal(resultObject.get("toExpectedAmount").toString());
+                    final BigDecimal depositExpectedAmount = new BigDecimal(resultObject.get("depositExpectedAmount").toString());
+                    final BigDecimal destinationExpectedAmount = new BigDecimal(resultObject.get("destinationExpectedAmount").toString());
                     final String txURL = getNullableStringValue(resultObject, "txURL");
-                    final BigDecimal minValue = new BigDecimal(resultObject.get("minValue").toString());
-                    final BigDecimal maxValue = new BigDecimal(resultObject.get("maxValue").toString());
-                    return new StatusResponse(exchangeStatus, fromAmount, fromCoin, toCoin, toAmount, refundAddress, toAddress, fromAddress, creationTime, fromExpectedAmount, toExpectedAmount, txURL, minValue, maxValue);
+                    final BigDecimal minDeposit = new BigDecimal(resultObject.get("minDeposit").toString());
+                    final BigDecimal maxDeposit = new BigDecimal(resultObject.get("maxDeposit").toString());
+                    return new StatusResponse(exchangeStatus, depositAmount, depositCoin, destinationCoin, destinationAmount, refundAddress, destinationAddress, depositAddress, creationTime, depositExpectedAmount, destinationExpectedAmount, txURL, minDeposit, maxDeposit);
                 } else {
                     return new StatusResponse(error);
                 }
