@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public interface Evercoin {
     LimitResponse getLimit(String depositCoin, String destinationCoin);
 
-    ValidateResponse validateAddress( String coin, String address);
+    ValidateResponse validateAddress(String coin, String address);
 
     CoinsResponse getCoins();
 

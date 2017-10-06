@@ -18,7 +18,7 @@ public class RippleAddress extends Address {
         builder
                 .add("mainAddress", mainAddress);
         if (destinationTag != null && destinationTag != 0) {
-            builder.add("tagName", "Payment Id");
+            builder.add("tagName", "Destination Tag");
             builder.add("tagValue", destinationTag.toString());
         }
         JsonObject jsonToAddress = builder.build();
