@@ -29,11 +29,11 @@ public class Test {
         Coin depositCoin = coins.getCoin(deposit);
         Coin destinationCoin = coins.getCoin(destination);
         if (depositCoin != null && !depositCoin.isFromAvailable()) {
-            //Exchanging from BTC is currently available.
+            //Exchanging from BTC is not currently available.
             return;
         }
         if (destinationCoin != null && !destinationCoin.isToAvailable()) {
-            //Exchanging to ETH is currently available.
+            //Exchanging to ETH is not currently available.
             return;
         }
         if (!evercoin.validateAddress(deposit, refundMainAddress).isValid()) {
@@ -76,7 +76,7 @@ public class Test {
 ```
 ## More Info
 
-More information and API documentation can be found at https://evercoin.com/API/
+More information and API documentation can be found at https://evercoin.com/api/
 
 ## Getting help
 
